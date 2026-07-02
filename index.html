@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>1688标题违禁词检测 · 龙虾出品</title>
+<title>1688标题智能审查 · 龙虾出品</title>
 <style>
 :root{
  --bg:#05070a;--surface:rgba(255,255,255,.02);--surface2:rgba(255,255,255,.04);
@@ -16,34 +16,64 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
-.container{max-width:760px;margin:0 auto;padding:24px 20px 100px;position:relative;z-index:1}
+.container{max-width:800px;margin:0 auto;padding:24px 20px 100px;position:relative;z-index:1}
 
 nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
 nav .logo{font-size:18px;font-weight:800;letter-spacing:-.5px}
 nav .logo span{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-.hero{margin-bottom:36px}
-.hero .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;font-size:11px;color:var(--text2);margin-bottom:20px}
+.hero{margin-bottom:32px}
+.hero .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;font-size:11px;color:var(--text2);margin-bottom:18px}
 .hero .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.hero h1{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px}
+.hero h1{font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px}
 .hero h1 .glow{background:linear-gradient(135deg,var(--blue) 0%,var(--purple) 50%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero .sub{font-size:15px;color:var(--text2);line-height:1.6}
+.hero .sub{font-size:14px;color:var(--text2);line-height:1.6}
 
-.checker-cat-filter{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
-.checker-cat-filter button{padding:7px 16px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;transition:all .2s;font-family:var(--font)}
-.checker-cat-filter button:hover{background:var(--surface2);color:var(--text);border-color:var(--border2)}
-.checker-cat-filter button.on{background:rgba(79,140,255,.12);color:var(--blue);border-color:rgba(79,140,255,.25)}
-
-.checker-input{width:100%;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;resize:vertical;min-height:100px;outline:none;font-family:var(--font);transition:border-color .25s;line-height:1.6;margin-bottom:20px}
+.checker-input{width:100%;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;resize:vertical;min-height:80px;outline:none;font-family:var(--font);transition:border-color .25s;line-height:1.6;margin-bottom:20px}
 .checker-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,140,255,.1)}
 .checker-input::placeholder{color:var(--text3)}
 
-.checker-stats{display:flex;gap:8px;margin-bottom:20px}
-.c-stat{flex:1;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center}
-.c-stat .cs-num{font-size:22px;font-weight:800;letter-spacing:-.5px}
-.c-stat .cs-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+/* Score Ring */
+.score-section{display:flex;gap:20px;margin-bottom:24px;align-items:center;flex-wrap:wrap}
+.score-ring{position:relative;width:100px;height:100px;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800}
+.score-meta{flex:1;min-width:200px}
+.score-meta .score-label{font-size:18px;font-weight:700;margin-bottom:6px}
+.score-meta .score-detail{font-size:12px;color:var(--text2);line-height:1.6}
 
+/* Rule checks */
+.rule-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:24px}
+.rule-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:flex-start;gap:10px}
+.rule-item .ri-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.rule-item .ri-body{flex:1}
+.rule-item .ri-title{font-size:12px;font-weight:700;margin-bottom:2px}
+.rule-item .ri-desc{font-size:10px;color:var(--text3);line-height:1.4}
+.rule-item.pass{border-color:rgba(34,211,154,.2);background:rgba(34,211,154,.03)}
+.rule-item.fail{border-color:rgba(245,70,91,.2);background:rgba(245,70,91,.03)}
+.rule-item.warn{border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.03)}
+
+/* Suggestions */
+.suggestion-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+.suggestion-box h3{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sug-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.6}
+.sug-item:last-child{border:none}
+.sug-item .sug-before{color:var(--red);text-decoration:line-through;margin-right:6px}
+.sug-item .sug-after{color:var(--green);font-weight:600}
+.sug-item .sug-reason{display:block;color:var(--text3);font-size:10px;margin-top:2px}
+
+/* Empty */
+.empty-state{text-align:center;padding:40px;color:var(--text3)}
+.empty-state .ce-icon{font-size:48px;display:block;margin-bottom:12px}
+
+/* Tabs */
+.tab-bar{display:flex;gap:0;margin-bottom:20px;background:var(--surface2);border-radius:100px;padding:3px;width:fit-content;border:1px solid var(--border)}
+.tab-bar button{padding:8px 18px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .2s;font-family:var(--font)}
+.tab-bar button.active{background:#fff;color:#000;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.tab-bar button:hover:not(.active){color:var(--text)}
+
+/* Violation groups */
 .v-group{margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
 .v-group .v-hd{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:background .2s}
 .v-group .v-hd:hover{background:var(--surface2)}
@@ -58,18 +88,14 @@ nav .logo span{background:linear-gradient(135deg,var(--blue),var(--purple));-web
 .v-row .v-word.warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:var(--orange)}
 .v-row .v-arrow{color:var(--text3);flex-shrink:0}
 .v-row .v-fix{color:var(--green);font-size:11px}
-.checker-empty{text-align:center;padding:50px;color:var(--text3);font-size:14px}
-.checker-empty .ce-icon{font-size:48px;display:block;margin-bottom:12px}
 
 .footer{text-align:center;padding:32px;font-size:11px;color:var(--text3)}
 .footer span{display:none}
 
 @media(max-width:600px){
- .hero h1{font-size:24px}
- .hero .sub{font-size:13px}
- .checker-stats{flex-wrap:wrap}
- .c-stat{padding:10px}
- .c-stat .cs-num{font-size:18px}
+ .hero h1{font-size:22px}
+ .score-section{flex-direction:column;align-items:center;text-align:center}
+ .rule-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -82,36 +108,30 @@ nav .logo span{background:linear-gradient(135deg,var(--blue),var(--purple));-web
  </nav>
 
  <div class="hero">
-  <div class="badge"><span class="dot"></span> 140+规则 · 广告法合规 · 7大类目</div>
-  <h1>你的标题<br>能过<span class="glow">广告法</span>吗？</h1>
-  <p class="sub">粘贴1688/淘宝/拼多多商品标题，秒级检测。极限词、医疗功效、虚假承诺——逐词标记，给出修改建议。</p>
+  <div class="badge"><span class="dot"></span> 广告法 + 1688白皮书 · 双重审核 · 互联网验证</div>
+  <h1>你的标题<br>能通过<span class="glow">双重审查</span>吗？</h1>
+  <p class="sub">不仅仅是违禁词。1688官方白皮书规则、标题结构评分、流量优化建议、同行标题参考——一步到位。</p>
  </div>
 
- <div class="checker-cat-filter" id="checkerCats">
-  <button class="on" data-ccat="all">全类目</button>
-  <button data-ccat="medical">膏贴/器械</button>
-  <button data-ccat="food">食品/保健品</button>
-  <button data-ccat="cosmetic">化妆品</button>
-  <button data-ccat="cloth">服装/鞋包</button>
-  <button data-ccat="digital">数码/电子</button>
-  <button data-ccat="home">家居/日用</button>
+ <textarea class="checker-input" id="checkerInput" placeholder="粘贴1688商品标题，如：2025夏季新款男式纯棉短袖T恤 全网最好 百搭透气..."></textarea>
+
+ <!-- Result tabs -->
+ <div class="tab-bar" id="resultTabs" style="display:none">
+  <button class="active" data-view="score">📊 综合评分</button>
+  <button data-view="violations">🚫 违禁词</button>
+  <button data-view="rules">📋 白皮书规则</button>
+  <button data-view="suggestions">💡 优化建议</button>
  </div>
 
- <textarea class="checker-input" id="checkerInput" placeholder="粘贴商品标题，如：2025夏季新款男式纯棉短袖T恤 全网最好 百搭透气 限时特惠..."></textarea>
+ <div id="view-score"></div>
+ <div id="view-violations" style="display:none"></div>
+ <div id="view-rules" style="display:none"></div>
+ <div id="view-suggestions" style="display:none"></div>
 
- <div class="checker-stats">
-  <div class="c-stat"><div class="cs-num" style="color:var(--blue)" id="cs-total">0</div><div class="cs-lbl">总字数</div></div>
-  <div class="c-stat"><div class="cs-num" style="color:var(--green)" id="cs-safe">0</div><div class="cs-lbl">安全通过</div></div>
-  <div class="c-stat"><div class="cs-num" style="color:var(--orange)" id="cs-warn">0</div><div class="cs-lbl">建议修改</div></div>
-  <div class="c-stat"><div class="cs-num" style="color:var(--red)" id="cs-danger">0</div><div class="cs-lbl">⚠ 严重违规</div></div>
- </div>
-
- <div id="checkerResults">
-  <div class="checker-empty"><span class="ce-icon">🛡</span>输入标题自动检测</div>
- </div>
+ <div class="empty-state" id="emptyState"><span class="ce-icon">🛡</span>输入标题自动审查</div>
 </div>
 
-<div class="footer">🦞 龙虾出品 · 1688标题违禁词实时检测<span id="lobster_sig" data-ok="1"></span></div>
+<div class="footer">🦞 龙虾出品 · 1688标题智能审查系统<span id="lobster_sig" data-ok="1"></span></div>
 
 <script>
 // Canvas bg
@@ -120,51 +140,240 @@ nav .logo span{background:linear-gradient(135deg,var(--blue),var(--purple));-web
 // Tamper guard
 (function(){setInterval(function(){var s=document.getElementById('lobster_sig');if(!s&&document.readyState==='complete'){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#05070a;color:#F5465B;font-family:sans-serif;text-align:center"><div><h1>🚫</h1><h2>此版本已被篡改</h2><p style="color:#8B95A5">联系龙虾获取正版</p></div></div>'}},200);})();
 
-// Word bank
+// ===== WORD BANK =====
 var FW_ALL=[{w:'最',c:'极限词',g:'all',s:'high',t:'改为"很""更"'},{w:'最佳',c:'极限词',g:'all',s:'high',t:'删除'},{w:'最好',c:'极限词',g:'all',s:'mid',t:'改为"优选"'},{w:'最低',c:'极限词',g:'all',s:'high',t:'改为"实惠"'},{w:'最高',c:'极限词',g:'all',s:'high',t:'删除'},{w:'顶级',c:'极限词',g:'all',s:'high',t:'改为"高端"'},{w:'极品',c:'极限词',g:'all',s:'high',t:'删除'},{w:'极致',c:'极限词',g:'all',s:'high',t:'删除'},{w:'第一',c:'极限词',g:'all',s:'high',t:'不要自称第一'},{w:'首个',c:'极限词',g:'all',s:'high',t:'删除'},{w:'首选',c:'极限词',g:'all',s:'mid',t:'改为"推荐"'},{w:'唯一',c:'极限词',g:'all',s:'high',t:'删除'},{w:'独家',c:'极限词',g:'all',s:'mid',t:'改为"专供"'},{w:'绝对',c:'极限词',g:'all',s:'high',t:'删除'},{w:'万能',c:'极限词',g:'all',s:'high',t:'删除'},{w:'100%',c:'极限词',g:'all',s:'high',t:'删除'},{w:'全网',c:'极限词',g:'all',s:'high',t:'删除'},{w:'国家级',c:'极限词',g:'all',s:'high',t:'删除'},{w:'冠军',c:'极限词',g:'all',s:'high',t:'删除'},{w:'王牌',c:'极限词',g:'all',s:'high',t:'删除'},{w:'永久',c:'极限词',g:'all',s:'high',t:'删除'},{w:'第一品牌',c:'极限词',g:'all',s:'high',t:'删除'},{w:'销量冠军',c:'极限词',g:'all',s:'high',t:'删除'},{w:'独一无二',c:'极限词',g:'all',s:'high',t:'删除'},{w:'最新',c:'极限词',g:'all',s:'mid',t:'删除'},{w:'加微信',c:'诱导联系',g:'all',s:'high',t:'平台禁止留联系方式'},{w:'扫码',c:'诱导联系',g:'all',s:'high',t:'删除'},{w:'好评返现',c:'诱导联系',g:'all',s:'high',t:'严禁！删除'},{w:'仿',c:'品牌侵权',g:'all',s:'high',t:'删除，不要暗示仿品'},{w:'高仿',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'A货',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'原单',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'复刻',c:'品牌侵权',g:'all',s:'high',t:'删除'},{w:'治疗',c:'医疗功效',g:'medical',s:'high',t:'删除，膏贴不是药'},{w:'治愈',c:'医疗功效',g:'medical',s:'high',t:'删除'},{w:'根治',c:'医疗功效',g:'medical',s:'high',t:'改为"缓解"'},{w:'消炎',c:'医疗功效',g:'medical',s:'high',t:'删除，不能宣称消炎'},{w:'抗菌',c:'医疗功效',g:'medical',s:'high',t:'删除'},{w:'杀菌',c:'医疗功效',g:'medical',s:'high',t:'删除'},{w:'修复',c:'医疗功效',g:'medical_cosmetic',s:'high',t:'改为"养护"'},{w:'再生',c:'医疗功效',g:'medical_cosmetic',s:'high',t:'删除'},{w:'关节炎',c:'疾病名称',g:'medical',s:'high',t:'删除，不能提具体病名'},{w:'颈椎病',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'腰椎',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'风湿',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'骨质增生',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'肩周炎',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'痛风',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'静脉曲张',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'椎间盘',c:'疾病名称',g:'medical',s:'high',t:'删除'},{w:'活血',c:'医疗用语',g:'medical',s:'high',t:'改为"温通"'},{w:'化瘀',c:'医疗用语',g:'medical',s:'high',t:'删除'},{w:'祛风',c:'医疗用语',g:'medical',s:'high',t:'删除'},{w:'除湿',c:'医疗用语',g:'medical',s:'mid',t:'改为"排湿"'},{w:'止痛',c:'医疗用语',g:'medical',s:'high',t:'改为"舒缓"'},{w:'消肿',c:'医疗用语',g:'medical',s:'high',t:'删除'},{w:'包治百病',c:'功效断言',g:'medical_food',s:'high',t:'删除'},{w:'一贴见效',c:'功效断言',g:'medical',s:'high',t:'删除'},{w:'立竿见影',c:'功效断言',g:'medical_cosmetic',s:'high',t:'删除'},{w:'特效',c:'功效断言',g:'all',s:'high',t:'改为"体验装"'},{w:'奇效',c:'功效断言',g:'all',s:'high',t:'删除'},{w:'见效快',c:'功效断言',g:'all',s:'high',t:'删除'},{w:'安全无毒',c:'安全断言',g:'all',s:'high',t:'删除，不能断言安全性'},{w:'无副作用',c:'安全断言',g:'medical_food_cosmetic',s:'high',t:'删除'},{w:'纯天然',c:'安全断言',g:'all',s:'mid',t:'改为"草本""植萃"'},{w:'孕妇可用',c:'安全断言',g:'medical_cosmetic',s:'high',t:'删除，需遵医嘱'},{w:'疼痛',c:'症状暗示',g:'medical',s:'mid',t:'可以不说"痛"，说"运动后"'},{w:'酸痛',c:'症状暗示',g:'medical',s:'mid',t:'删除'},{w:'麻木',c:'症状暗示',g:'medical',s:'mid',t:'删除'},{w:'僵硬',c:'症状暗示',g:'medical',s:'mid',t:'改为"紧绷"'},{w:'不舒服',c:'症状暗示',g:'all',s:'mid',t:'改为"疲劳"'},{w:'减肥',c:'食品功效',g:'food',s:'high',t:'不能宣称减肥'},{w:'排毒',c:'食品功效',g:'food_cosmetic',s:'high',t:'删除'},{w:'防癌',c:'食品功效',g:'food',s:'high',t:'删除'},{w:'降血压',c:'食品功效',g:'food',s:'high',t:'删除'},{w:'美白',c:'化妆品功效',g:'cosmetic',s:'high',t:'非特证不能宣称'},{w:'祛斑',c:'化妆品功效',g:'cosmetic',s:'high',t:'非特证不能宣称'},{w:'防晒',c:'化妆品功效',g:'cosmetic',s:'high',t:'非特证不能宣称'},{w:'祛痘',c:'化妆品功效',g:'cosmetic',s:'high',t:'改为"控油"'},{w:'抗皱',c:'化妆品功效',g:'cosmetic',s:'high',t:'改为"保湿紧致"'},{w:'真丝',c:'材质夸大',g:'cloth',s:'high',t:'非真丝材质不能标注'},{w:'羊绒',c:'材质夸大',g:'cloth',s:'high',t:'非羊绒不能标注'},{w:'行货',c:'产品宣称',g:'digital',s:'mid',t:'需有正规渠道证明'},{w:'零甲醛',c:'环保宣称',g:'home',s:'high',t:'需检测报告支持'}];
 
-var checkerCat='all';
+// Brand words to flag
+var BRANDS=['迪士尼','米老鼠','耐克','阿迪达斯','nike','adidas','LV','Gucci','香奈儿','爱马仕','supreme','Apple','苹果'];
 
-function matchCat(wordCat,targetCat){if(targetCat==='all')return true;return wordCat.split('_').indexOf('all')!==-1||wordCat.split('_').indexOf(targetCat)!==-1}
+// ===== 1688 RULE ENGINE =====
 
-function runCheck(){
- var text=document.getElementById('checkerInput').value.trim();
- var words=FW_ALL.filter(function(w){return matchCat(w.g,checkerCat)});
- var found=[],seen={};
- words.forEach(function(w){if(text.indexOf(w.w)!==-1&&!seen[w.w]){seen[w.w]=true;found.push(w)}});
- var bad=found.filter(function(w){return w.s==='high'});
- var mid=found.filter(function(w){return w.s==='mid'});
- document.getElementById('cs-total').textContent=text.length;
- document.getElementById('cs-danger').textContent=bad.length;
- document.getElementById('cs-warn').textContent=mid.length;
- document.getElementById('cs-safe').textContent=text.length?text.length-bad.length-mid.length:0;
- var res=document.getElementById('checkerResults');
- if(!text){res.innerHTML='<div class="checker-empty"><span class="ce-icon">🛡</span>输入标题自动检测</div>';return}
- if(!found.length){res.innerHTML='<div class="checker-empty"><span class="ce-icon">✅</span>未检测到违禁词，标题安全</div>';return}
- var groups={};
- found.forEach(function(w){if(!groups[w.c])groups[w.c]=[];groups[w.c].push(w)});
- var html='';
- Object.keys(groups).forEach(function(cat){
-  var items=groups[cat];
-  html+='<div class="v-group open"><div class="v-hd" onclick="this.parentElement.classList.toggle(\'open\')"><span class="v-badge" style="background:var(--red)">'+cat+'</span><span class="v-title">'+items.length+'处违规</span><span class="v-count">▼</span></div><div class="v-body">';
-  items.forEach(function(w){
-   html+='<div class="v-row"><span class="v-word'+(w.s==='mid'?' warn':'')+'">'+(w.s==='high'?'🚫 ':'⚡ ')+es(w.w)+'</span><span class="v-arrow">→</span><span class="v-fix">'+es(w.t)+'</span></div>';
-  });
-  html+='</div></div>';
- });
- res.innerHTML=html;
+function analyzeTitle(text){
+  var result={violations:[],rules:[],suggestions:[],score:100,title:text};
+
+  // 1. Violation check
+  var found=[],seen={};
+  FW_ALL.forEach(function(w){if(text.indexOf(w.w)!==-1&&!seen[w.w]){seen[w.w]=true;found.push(w)}});
+  result.violations=found;
+
+  // 2. 1688白皮书规则检查
+  var charLen=text.length;
+  var len=text.replace(/\s/g,'').length;
+
+  // 规则1: 标题长度 ≤ 30字
+  if(len>30){result.rules.push({icon:'📏',title:'标题过长',desc:'当前'+len+'字，1688限制30字，超出'+(len-30)+'字',status:'fail',deduct:5})}
+  else if(len>=25){result.rules.push({icon:'📏',title:'标题长度良好',desc:len+'/30字，充分利用了标题空间',status:'pass',deduct:0})}
+  else if(len>=20){result.rules.push({icon:'📏',title:'标题偏短',desc:len+'/30字，还有'+(30-len)+'字可用，建议写满以获得更多关键词匹配',status:'warn',deduct:3})}
+  else{result.rules.push({icon:'📏',title:'标题太短',desc:'仅'+len+'/30字，缺少关键词覆盖，严重影响搜索曝光',status:'fail',deduct:8})}
+
+  // 规则2: 符号检查
+  if(/[，。！？、；：“”‘’（）【】《》…—·,.!?;:'"()\[\]{}<>\/\\|@#$%^&*=+~`]/.test(text)){
+    result.rules.push({icon:'🚫',title:'含标点符号',desc:'1688标题不允许标点符号和特殊字符，会被降权',status:'fail',deduct:5});
+  }else{result.rules.push({icon:'✅',title:'无违规符号',desc:'标题不含标点符号，符合规范',status:'pass',deduct:0})}
+
+  // 规则3: emoji检查
+  if(/[\u{1F300}-\u{1F9FF}]/u.test(text)){
+    result.rules.push({icon:'🚫',title:'含Emoji表情',desc:'1688标题禁止使用emoji表情',status:'fail',deduct:5});
+  }else{result.rules.push({icon:'✅',title:'无Emoji',desc:'符合规范',status:'pass',deduct:0})}
+
+  // 规则4: 品牌词检查
+  var foundBrands=[];
+  BRANDS.forEach(function(b){if(text.toLowerCase().indexOf(b.toLowerCase())!==-1)foundBrands.push(b)});
+  if(foundBrands.length>0){result.rules.push({icon:'⚠️',title:'疑似侵权品牌词',desc:'检测到: '+foundBrands.join('、')+'，未经授权使用将被下架',status:'fail',deduct:10})}
+  else{result.rules.push({icon:'✅',title:'无侵权品牌词',desc:'未检测到知名品牌词',status:'pass',deduct:0})}
+
+  // 规则5: 产品词数量（通过常见产品后缀检测）
+  var prodPatterns=['服','装','机','器','鞋','包','表','镜','灯','伞','杯','壶','垫','套','盒','袋','板','管','线','笔','纸','架','桌','椅','床','柜','帘','毯','枕','帘'];
+  var prodCount=0;
+  prodPatterns.forEach(function(p){if(text.indexOf(p)>=0)prodCount++});
+  if(prodCount>2){result.rules.push({icon:'⚠️',title:'疑似标题堆砌',desc:'标题可能包含多个产品词，1688只允许1-2个产品词，多余会被降权',status:'warn',deduct:6})}
+  else{result.rules.push({icon:'✅',title:'产品词数量合理',desc:'未检测到堆砌现象',status:'pass',deduct:0})}
+
+  // 规则6: 空格检查（不超过2个）
+  var spaces=(text.match(/\s/g)||[]).length;
+  if(spaces>2){result.rules.push({icon:'⚠️',title:'空格过多',desc:'当前'+spaces+'个空格，建议不超过2个',status:'warn',deduct:2})}
+  else{result.rules.push({icon:'✅',title:'空格规范',desc:spaces+'个空格，符合规范',status:'pass',deduct:0})}
+
+  // 规则7: 与其它商品比较
+  if(/比.{1,5}(便宜|好|强|牛|厉害)/.test(text)){
+    result.rules.push({icon:'🚫',title:'含对比描述',desc:'1688禁止标题中出现与其它商品比较的词汇',status:'fail',deduct:5})
+  }else{result.rules.push({icon:'✅',title:'无对比词',desc:'符合规范',status:'pass',deduct:0})}
+
+  // 规则8: 核心词位置建议（1688从右向左匹配，核心词应在尾部）
+  result.rules.push({icon:'💡',title:'核心词位置建议',desc:'1688搜索从右向左匹配，核心产品词（如"T恤""耳机"）应放在标题末尾而非开头',status:'warn',deduct:3})
+
+  // 规则9: 数字/年份检查
+  if(/\d{4}款/.test(text)){result.rules.push({icon:'✅',title:'年份款号标注',desc:'已标注年份款号，有助于搜索匹配',status:'pass',deduct:0})}
+  else{result.rules.push({icon:'💡',title:'建议加年份',desc:'未标注年份（如"2025款"），建议加入以覆盖年度搜索词',status:'warn',deduct:2})}
+
+  // Calculate score
+  result.rules.forEach(function(r){result.score-=r.deduct});
+  if(found.length>0){var bad=found.filter(function(w){return w.s==='high'});result.score-=bad.length*3;result.score-=found.filter(function(w){return w.s==='mid'}).length}
+  if(result.score<0)result.score=0;
+
+  // ===== SMART SUGGESTIONS =====
+  // 根据标题内容推断产品类型并给出优化建议
+  var productType=detectProductType(text);
+  if(productType){result.productType=productType;result.suggestions=generateSuggestions(text,productType,found,result.rules)}
+
+  return result;
 }
 
+function detectProductType(text){
+  var types=[
+    {name:'服装',keys:['T恤','短袖','衬衫','连衣裙','裤子','外套','卫衣','针织','毛衣','内衣','睡衣','运动服','休闲裤','牛仔裤','风衣','夹克','西服','羽绒服','马甲','POLO衫']},
+    {name:'鞋包',keys:['鞋','靴','包','背包','箱包','行李箱','手提包','钱包','女包','男包','帆布鞋','运动鞋']},
+    {name:'数码电子',keys:['耳机','手机壳','数据线','充电器','充电宝','蓝牙','音箱','U盘','键盘','鼠标','支架','手机','平板','电脑','笔记本']},
+    {name:'家居日用',keys:['桌','椅','床','柜','帘','灯','架','收纳','抱枕','地毯','餐具','杯','壶','清洁','拖把','扫把']},
+    {name:'膏贴',keys:['贴','膏','贴膏','冷敷','热敷','穴位','肩颈','腰','膝盖']},
+    {name:'食品',keys:['茶','零食','坚果','糖果','饼干','糕点','饮料','咖啡','代餐','滋补','阿胶']},
+    {name:'化妆品',keys:['面膜','精华','乳液','面霜','口红','眼影','粉底','隔离','防晒霜','洗面奶']},
+    {name:'饰品',keys:['项链','手链','戒指','耳环','耳钉','发夹','头绳','手镯','胸针','手串']},
+    {name:'母婴',keys:['婴儿','宝宝','儿童','孕妇','奶瓶','奶粉','尿不湿','玩具','童装']}
+  ];
+  for(var i=0;i<types.length;i++){for(var j=0;j<types[i].keys.length;j++){if(text.indexOf(types[i].keys[j])>=0)return types[i]}}
+  return null;
+}
+
+function generateSuggestions(text,productType,violations,rules){
+  var sugs=[];
+  var name=productType.name;
+
+  // 结构建议
+  sugs.push({type:'struct',text:'标题结构应为：<span class="sug-after">营销词+属性词+产品词</span>，核心产品词放在最后（1688右→左匹配）',reason:'来源：1688官方白皮书'});
+
+  // 长度不够
+  var len=text.replace(/\s/g,'').length;
+  if(len<25){
+    var missing=30-len;
+    var attrs=extractAttrs(text,name);
+    if(attrs.length<3){
+      sugs.push({type:'add',text:'补充属性词，如 <span class="sug-after">材质、规格、风格、适用场景</span>等，当前缺少产品特征描述',reason:'属性词不足会影响精准搜索匹配'});
+    }
+    if(missing>5){
+      sugs.push({type:'add',text:'标题仅'+len+'字，还可补充<span class="sug-after"> '+missing+'字</span>的营销词或场景词',reason:'满30字可获得最大关键词覆盖'});
+    }
+  }
+
+  // 缺营销词
+  if(!/厂家|批发|定制|直销|源头|工厂|现货|包邮/.test(text)){
+    sugs.push({type:'add',text:'建议加B端营销词，如 <span class="sug-after">"厂家直销""一件代发""支持定制"</span>等',reason:'1688买家偏好搜索批发/定制类关键词'});
+  }
+
+  // 缺场景词
+  if(productType.name==='服装'&&!/商务|休闲|运动|户外|居家|办公|面试|约会|通勤/.test(text)){
+    sugs.push({type:'add',text:'缺少场景词，建议补充如 <span class="sug-after">"商务通勤""休闲百搭"</span>等使用场景',reason:'场景词能覆盖长尾搜索需求'});
+  }
+
+  // 违禁词修改
+  var highCount=violations.filter(function(w){return w.s==='high'}).length;
+  if(highCount>0){
+    sugs.push({type:'fix',text:'有 <span class="sug-before">'+highCount+'个</span> <span class="sug-after">严重违禁词</span>，必须删除或替换才能通过审核',reason:'极限词/医疗宣称会导致商品降权或下架'});
+  }
+
+  // 年款建议
+  if(!/20\d{2}款/.test(text)){
+    sugs.push({type:'add',text:'建议加上年份款号，如 <span class="sug-after">"2025款"</span>，买家常按年份搜索',reason:'年度关键词搜索量稳定'});
+  }
+
+  // 针对特定品类的优化
+  if(name==='服装'){
+    if(!/纯棉|冰丝|透气|宽松|修身|加厚|薄款/.test(text))sugs.push({type:'add',text:'服装类建议补充 <span class="sug-after">材质+版型词</span>（如"纯棉""冰丝""宽松"）',reason:'材质和版型是服装搜索的核心属性'});
+  }
+  if(name==='数码电子'){
+    if(!/快充|蓝牙|Type.?C|无线|便携|迷你/.test(text))sugs.push({type:'add',text:'数码类建议补充 <span class="sug-after">功能特性词</span>（如"快充""蓝牙5.3""Type-C"）',reason:'功能词是数码产品搜索热词'});
+  }
+  if(name==='膏贴'){
+    sugs.push({type:'warn',text:'⚠️ 膏贴类严禁提 <span class="sug-before">疾病名称和医疗功效</span>，只能说"运动舒缓"',reason:'医疗器械监管严格，违规下架风险极高'});
+  }
+  if(name==='食品'){
+    sugs.push({type:'warn',text:'⚠️ 食品类严禁提 <span class="sug-before">减肥/排毒/降血压</span>等功效，只能说口味/原料',reason:'食品功效宣称违反广告法'});
+  }
+
+  return sugs;
+}
+
+function extractAttrs(text,productType){
+  var attrs=[];
+  var all=['纯棉','冰丝','透气','加厚','防水','防滑','便携','折叠','不锈钢','304','实木','环保','无毒','大容量','迷你','创意','新款','韩版','简约','ins','北欧','复古','国潮','轻奢'];
+  all.forEach(function(a){if(text.indexOf(a)>=0)attrs.push(a)});
+  return attrs;
+}
+
+// ===== RENDER =====
 function es(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 
-document.getElementById('checkerInput').addEventListener('input',runCheck);
-document.getElementById('checkerCats').addEventListener('click',function(e){
- if(!e.target.dataset.ccat)return;
- document.querySelectorAll('#checkerCats button').forEach(function(b){b.classList.remove('on')});
- e.target.classList.add('on');
- checkerCat=e.target.dataset.ccat;
- runCheck();
+function runCheck(){
+  var text=document.getElementById('checkerInput').value.trim();
+  if(!text){document.getElementById('emptyState').style.display='block';document.getElementById('resultTabs').style.display='none';document.getElementById('view-score').innerHTML='';return}
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('resultTabs').style.display='flex';
+
+  var result=analyzeTitle(text);
+
+  // Score view
+  var color=result.score>=80?'#22D39A':result.score>=60?'#F59E0B':'#F5465B';
+  var label=result.score>=80?'优秀':result.score>=60?'需优化':'有风险';
+  var r=40,c=2*Math.PI*r,offset=c*(1-result.score/100);
+  var scoreHTML='<div class="score-section"><div class="score-ring"><svg width="100" height="100"><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="var(--border)" stroke-width="6"/><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-dasharray="'+c+'" stroke-dashoffset="'+offset+'" stroke-linecap="round"/></svg><div class="val" style="color:'+color+'">'+result.score+'</div></div><div class="score-meta"><div class="score-label" style="color:'+color+'">'+label+'</div><div class="score-detail">';
+  if(result.productType){scoreHTML+='检测到类目：<b>'+result.productType.name+'</b><br>'}
+  scoreHTML+='违禁词：<b style="color:'+(result.violations.length?'var(--red)':'var(--green)')+'">'+result.violations.length+'个</b> · 白皮书规则：<b>'+result.rules.length+'项</b> · 优化建议：<b>'+result.suggestions.length+'条</b></div></div></div>';
+  document.getElementById('view-score').innerHTML=scoreHTML;
+
+  // Violations view
+  var vhtml='';
+  if(!result.violations.length){vhtml='<div class="empty-state"><span class="ce-icon">✅</span>未检测到违禁词</div>'}
+  else{
+    var groups={};
+    result.violations.forEach(function(w){if(!groups[w.c])groups[w.c]=[];groups[w.c].push(w)});
+    Object.keys(groups).forEach(function(cat){var items=groups[cat];
+      vhtml+='<div class="v-group open"><div class="v-hd" onclick="this.parentElement.classList.toggle(\'open\')"><span class="v-badge" style="background:var(--red)">'+cat+'</span><span class="v-title">'+items.length+'处违规</span><span class="v-count">▼</span></div><div class="v-body">';
+      items.forEach(function(w){vhtml+='<div class="v-row"><span class="v-word'+(w.s==='mid'?' warn':'')+'">'+(w.s==='high'?'🚫 ':'⚡ ')+es(w.w)+'</span><span class="v-arrow">→</span><span class="v-fix">'+es(w.t)+'</span></div>'});
+      vhtml+='</div></div>';
+    });
+  }
+  document.getElementById('view-violations').innerHTML=vhtml;
+
+  // Rules view
+  var rhtml='<div class="rule-grid">';
+  result.rules.forEach(function(r){rhtml+='<div class="rule-item '+r.status+'"><div class="ri-icon">'+r.icon+'</div><div class="ri-body"><div class="ri-title">'+r.title+'</div><div class="ri-desc">'+r.desc+'</div></div></div>'});
+  rhtml+='</div>';
+  document.getElementById('view-rules').innerHTML=rhtml;
+
+  // Suggestions view
+  var shtml='<div class="suggestion-box"><h3>💡 标题优化建议</h3>';
+  if(!result.suggestions.length){shtml+='<div class="sug-item">✅ 标题基础结构良好，可进一步参考同行优化</div>'}
+  else{result.suggestions.forEach(function(s){shtml+='<div class="sug-item">'+s.text+'<span class="sug-reason">📖 '+s.reason+'</span></div>'})}
+  shtml+='</div>';
+  // 1688搜索链接
+  var q=text.substring(0,10);
+  shtml+='<div class="suggestion-box"><h3>🔍 互联网交叉验证</h3>';
+  shtml+='<div class="sug-item"><a href="https://s.1688.com/selloffer/offer_search.htm?keywords='+encodeURIComponent(q)+'" target="_blank" style="color:var(--blue)">→ 在1688搜索同类产品，参考同行标题写法</a></div>';
+  shtml+='<div class="sug-item"><a href="https://re.1688.com/?keywords='+encodeURIComponent(q)+'" target="_blank" style="color:var(--blue)">→ 查看生意参谋热搜关键词</a></div>';
+  shtml+='</div>';
+  document.getElementById('view-suggestions').innerHTML=shtml;
+
+  // Show score by default
+  switchResultView('score');
+}
+
+// Tab switching
+document.getElementById('resultTabs').addEventListener('click',function(e){
+  if(!e.target.dataset.view)return;
+  switchResultView(e.target.dataset.view);
 });
+
+function switchResultView(view){
+  document.querySelectorAll('#resultTabs button').forEach(function(b){b.classList.remove('active')});
+  var btn=document.querySelector('#resultTabs button[data-view="'+view+'"]');
+  if(btn)btn.classList.add('active');
+  document.getElementById('view-score').style.display=view==='score'?'block':'none';
+  document.getElementById('view-violations').style.display=view==='violations'?'block':'none';
+  document.getElementById('view-rules').style.display=view==='rules'?'block':'none';
+  document.getElementById('view-suggestions').style.display=view==='suggestions'?'block':'none';
+}
+
+document.getElementById('checkerInput').addEventListener('input',runCheck);
 </script>
 </body>
 </html>
